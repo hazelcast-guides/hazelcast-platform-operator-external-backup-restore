@@ -1,32 +1,26 @@
-= External Backup and Restore with Hazelcast
+= Restore a Cluster from Cloud Storage with Hazelcast Platform Operator
 :page-layout: tutorial
 :page-product: operator
 :page-categories: Cloud Native
 :page-lang: go, java, node, python
 :page-enterprise: true
 :page-est-time: 20 mins
-:description: Migrate Hazelcast backup data to/from blob storages that cloud providers maintain, within Hazelcast cluster running in Kubernetes.
+:description: Learn how to back up data in Hazelcast maps to cloud storage and restore a cluster from that backup data.
 
 {description}
 
 == Context
-In this tutorial you will learn:
+In this tutorial, you'll do the following:
 
-- Deploying Hazelcast with persistence enabled.
+- Deploy Hazelcast with persistence enabled.
 
-- Creating persistence enabled map in the Hazelcast.
+- Create a Hazelcast map that has persistence enabled.
 
-- Backing data up from the map into the external storage.
+- Back up all map entries to external storage in the cloud.
 
-- Restarting the Hazelcast cluster with the restored data from the external storage.
+- Restart the Hazelcast cluster and restore the backup map entries from the cloud.
 
-There are two available options for Persistence feature of Hazelcast Platform Operator:
-
-- *Local* - backup the data to/from PVC.
-
-- *External* - backup the data to/from external(blob) storages.
-
-You'll see the *External* option of the Persistence feature.
+See more detailed about Persistence: - xref:operator:ROOT:backup-restore.adoc[]
 
 == Before you Begin
 
@@ -39,7 +33,7 @@ Before starting this tutorial, make sure that you meet the following prerequisit
 
 == Step 1. Start the Hazelcast Cluster
 
-=== Create License Secret
+. Create License Secret
 
 Hazelcast Hot Backup is an enterprise feature, so you need to create a secret with Hazelcast Enterprise License (if you don't have one, get a trial license key from this https://hazelcast.com/get-started/#deploymenttype-imdg[link]).
 
@@ -48,7 +42,7 @@ Hazelcast Hot Backup is an enterprise feature, so you need to create a secret wi
 kubectl create secret generic hazelcast-license-key --from-literal=license-key=<hz-license-key>
 ----
 
-=== Create the Hazelcast Cluster
+. Create the Hazelcast Cluster
 
 Run the following command to create the Hazelcast cluster with Persistence enabled using External type.
 
@@ -83,7 +77,7 @@ EOF
 
 NOTE: The agent configuration is optional. If you do not pass the agent configuration, the operator directly use the latest stable version of the agent.
 
-=== Check the Cluster Status
+. Check the Cluster Status
 
 Run the following commands to see the cluster status
 
@@ -120,7 +114,7 @@ The field `EXTERNAL-IP` is the address of your Hazelcast cluster.
 
 == Step 2. Create Persistent Map and Put Data
 
-=== Create Persistent Map
+. Create Persistent Map
 
 Run the following command to create the Map resource with Persistence enabled.
 
@@ -138,7 +132,7 @@ EOF
 ----
 
 [[Configure-Client]]
-=== Configure the Hazelcast client to connect to the cluster external address.
+. Configure the Hazelcast client to connect to the cluster external address.
 
 [tabs]
 ====
@@ -285,7 +279,7 @@ Current map size: 10
 
 For triggering backup, you need `bucketURI` where backup data will be stored in and `secret` with credentials for accessing the given Bucket URI.
 
-=== Create Secret
+. Create Secret
 
 Run one of the following command to create the secret according to the cloud provider you want to backup.
 
@@ -311,7 +305,7 @@ kubectl create secret generic <secret-name> \
 	--from-literal=storage-key=<storage-key>
 ----
 
-=== Trigger Backup
+. Trigger Backup
 
 Run the following command to trigger backup
 
@@ -329,7 +323,7 @@ spec:
 EOF
 ----
 
-=== Check the Status of the Backup
+. Check the Status of the Backup
 
 Run the following command to check the status of the backup
 [source,bash]
@@ -346,7 +340,7 @@ hot-backup   Success
 
 == Step 3. Restore from External Backup
 
-=== Delete the Hazelcast Cluster
+. Delete the Hazelcast Cluster
 
 Run the following command to delete the Hazelcast cluster
 
@@ -355,7 +349,7 @@ Run the following command to delete the Hazelcast cluster
 kubectl delete hazelcast hazelcast
 ----
 
-=== Create new Hazelcast Cluster
+. Create new Hazelcast Cluster
 
 For restoring you will use the secret that you already created.
 Also you should pass the `bucketURI` with exact path of the backup
@@ -396,7 +390,7 @@ EOF
 
 As you may see, the agent configuration is not set. Thus, the operator directly use the latest stable version of the agent.
 
-=== Check the Cluster Status
+. Check the Cluster Status
 
 Run the following commands to see the cluster status
 
@@ -420,7 +414,7 @@ my-hazelcast   LoadBalancer   10.168.25.113   34.70.165.31   5701:32653/TCP,8080
 
 The field `EXTERNAL-IP` is the address of your Hazelcast cluster.
 
-=== Check Map Size
+. Check Map Size
 
 Configure the Hazelcast client to connect to the cluster external address as you did in <<Configure-Client, Configure the Hazelcast Client>>.
 
@@ -496,5 +490,5 @@ kubectl delete pvc -l "app.kubernetes.io/managed-by=hazelcast-platform-operator"
 
 == See Also
 
-- xref:operator:ROOT:index.adoc[]
+- xref:operator:ROOT:backup-restore.adoc[]
 - xref:hazelcast-platform-operator-expose-externally.adoc[]
