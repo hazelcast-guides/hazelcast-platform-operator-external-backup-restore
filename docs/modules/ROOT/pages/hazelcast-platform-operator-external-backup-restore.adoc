@@ -20,8 +20,6 @@ In this tutorial, you'll do the following:
 
 - Restart the Hazelcast cluster and restore the backup map entries from the cloud.
 
-See more detailed about Persistence: - xref:operator:ROOT:backup-restore.adoc[]
-
 == Before you Begin
 
 Before starting this tutorial, make sure that you meet the following prerequisites:
@@ -36,7 +34,7 @@ Before starting this tutorial, make sure that you meet the following prerequisit
 . Create License Secret
 +
 Hazelcast Hot Backup is an enterprise feature, so you need to create a secret with Hazelcast Enterprise License (if you don't have one, get a trial license key from this https://hazelcast.com/get-started/#deploymenttype-imdg[link]).
-
++
 [source, shell]
 ----
 kubectl create secret generic hazelcast-license-key --from-literal=license-key=<hz-license-key>
@@ -45,7 +43,7 @@ kubectl create secret generic hazelcast-license-key --from-literal=license-key=<
 . Create the Hazelcast Cluster
 +
 Run the following command to create the Hazelcast cluster with Persistence enabled using External type.
-
++
 [source, shell]
 ----
 cat <<EOF | kubectl apply -f -
@@ -74,20 +72,20 @@ spec:
     memberAccess: NodePortExternalIP
 EOF
 ----
-
++
 NOTE: The agent configuration is optional. If you do not pass the agent configuration, the operator directly use the latest stable version of the agent.
 
 . Check the Cluster Status
 +
 Run the following commands to see the cluster status
-
++
 [source, shell]
 ----
 $ kubectl get hazelcast my-hazelcast
 NAME           STATUS    MEMBERS   EXTERNAL-ADDRESSES
 my-hazelcast   Running   3/3       34.70.165.31:5701,34.70.165.31:8080
 ----
-
++
 [source, shell]
 ----
 $ kubectl get pods -l app.kubernetes.io/instance=my-hazelcast
@@ -97,19 +95,22 @@ my-hazelcast-0   2/2     Running   0          3m43s
 my-hazelcast-1   2/2     Running   0          3m16s
 my-hazelcast-2   2/2     Running   0          2m50s
 ----
-
++
 As you can see from the pod states, when external backup is used, the Backup Agent container will
 be deployed with the Hazelcast container in the same Pod. The agent is responsible for backing data up into the external storage.
 
+. Get the Address of the Hazelcast Cluster
++
 After verifying that the cluster is `Running` and all the members are ready, run the following command to find the discovery service address.
 
++
 [source, shell]
 ----
 $ kubectl get service my-hazelcast
 NAME           TYPE           CLUSTER-IP      EXTERNAL-IP    PORT(S)                         AGE
 my-hazelcast   LoadBalancer   10.168.25.113   34.70.165.31   5701:32653/TCP,8080:32162/TCP   69m
 ----
-
++
 The field `EXTERNAL-IP` is the address of your Hazelcast cluster.
 
 == Step 2. Create Persistent Map and Put Data
@@ -117,7 +118,7 @@ The field `EXTERNAL-IP` is the address of your Hazelcast cluster.
 . Create Persistent Map
 +
 Run the following command to create the Map resource with Persistence enabled.
-
++
 [source, shell]
 ----
 cat <<EOF | kubectl apply -f -
@@ -131,8 +132,7 @@ spec:
 EOF
 ----
 
-[[Configure-Client]]
-. Configure the Hazelcast client to connect to the cluster external address.
+. Configure the Hazelcast client to connect to the cluster external address. [[Configure-Client]]
 +
 [tabs]
 ====
@@ -207,9 +207,9 @@ client = hazelcast.HazelcastClient(
 --
 
 ====
-
++
 Now you can start the application to fill the map.
-
++
 [tabs]
 ====
 
@@ -257,9 +257,9 @@ python main.py fill
 --
 
 ====
-
++
 You should see the following output.
-
++
 [source, shell]
 ----
 Successful connection!
@@ -283,35 +283,47 @@ For triggering backup, you need `bucketURI` where backup data will be stored in 
 +
 Run one of the following command to create the secret according to the cloud provider you want to backup.
 
-..AWS
 +
+[tabs]
+====
+
+AWS::
++
+--
 [source,bash]
 ----
 kubectl create secret generic <secret-name> --from-literal=region=<region> \
 	--from-literal=access-key-id=<access-key-id> \
 	--from-literal=secret-access-key=<secret-access-key>
 ----
+--
 
-..GCP
+GCP::
 +
+--
 [source,bash]
 ----
 kubectl create secret generic <secret-name> --from-file=google-credentials-path=<service_account_json_file>
 ----
+--
 
-..Azure
+Azure::
 +
+--
 [source,bash]
 ----
 kubectl create secret generic <secret-name> \
 	--from-literal=storage-account=<storage-account> \
 	--from-literal=storage-key=<storage-key>
 ----
+--
+
+====
 
 . Trigger Backup
 +
 Run the following command to trigger backup
-
++
 [source, shell]
 ----
 cat <<EOF | kubectl apply -f -
@@ -329,24 +341,26 @@ EOF
 . Check the Status of the Backup
 +
 Run the following command to check the status of the backup
++
 [source,bash]
 ----
 kubectl get hotbackup hot-backup
 ----
-
++
 The status of the backup is displayed in the output.
++
 [source,bash]
 ----
 NAME         STATUS
 hot-backup   Success
 ----
 
-== Step 3. Restore from External Backup
+== Step 4. Restore from External Backup
 
 . Delete the Hazelcast Cluster
 +
 Run the following command to delete the Hazelcast cluster
-
++
 [source,bash]
 ----
 kubectl delete hazelcast hazelcast
@@ -356,12 +370,12 @@ kubectl delete hazelcast hazelcast
 +
 For restoring you will use the secret that you already created.
 Also you should pass the `bucketURI` with exact path of the backup
-
++
 *Example URI -> "s3://operator-backup?prefix=hazelcast/2022-06-08-17-01-20/"*
-
++
 Run the following command to create the Hazelcast cluster. Before the Hazelcast cluster is started,
 the operator starts the Restore Agent(InitContainer) which restores the backup data.
-
++
 [source, shell]
 ----
 cat <<EOF | kubectl apply -f -
@@ -390,39 +404,39 @@ spec:
 
 EOF
 ----
-
++
 As you may see, the agent configuration is not set. Thus, the operator directly use the latest stable version of the agent.
 
 . Check the Cluster Status
 +
 Run the following commands to see the cluster status
-
++
 [source, shell]
 ----
 $ kubectl get hazelcast my-hazelcast
 NAME           STATUS    MEMBERS   EXTERNAL-ADDRESSES
 my-hazelcast   Running   3/3       34.70.165.31:5701,34.70.165.31:8080
 ----
-
++
 Since we recreate the Hazelcast cluster, services are also recreated. The `EXTERNAL-IP` may change.
-
++
 After verifying that the cluster is `Running` and all the members are ready, run the following command to find the discovery service address.
-
++
 [source, shell]
 ----
 $ kubectl get service my-hazelcast
 NAME           TYPE           CLUSTER-IP      EXTERNAL-IP    PORT(S)                         AGE
 my-hazelcast   LoadBalancer   10.168.25.113   34.70.165.31   5701:32653/TCP,8080:32162/TCP   69m
 ----
-
++
 The field `EXTERNAL-IP` is the address of your Hazelcast cluster.
 
 . Check Map Size
 +
 Configure the Hazelcast client to connect to the cluster external address as you did in <<Configure-Client, Configure the Hazelcast Client>>.
-
++
 Now you can start the application to check the map size and see if the restore is successful.
-
++
 [tabs]
 ====
 
@@ -470,9 +484,9 @@ python main.py size
 --
 
 ====
-
++
 You should see the following output.
-
++
 [source, shell]
 ----
 Successful connection!
