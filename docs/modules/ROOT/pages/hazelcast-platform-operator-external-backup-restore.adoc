@@ -34,7 +34,7 @@ Before starting this tutorial, make sure that you meet the following prerequisit
 == Step 1. Start the Hazelcast Cluster
 
 . Create License Secret
-
++
 Hazelcast Hot Backup is an enterprise feature, so you need to create a secret with Hazelcast Enterprise License (if you don't have one, get a trial license key from this https://hazelcast.com/get-started/#deploymenttype-imdg[link]).
 
 [source, shell]
@@ -43,7 +43,7 @@ kubectl create secret generic hazelcast-license-key --from-literal=license-key=<
 ----
 
 . Create the Hazelcast Cluster
-
++
 Run the following command to create the Hazelcast cluster with Persistence enabled using External type.
 
 [source, shell]
@@ -78,7 +78,7 @@ EOF
 NOTE: The agent configuration is optional. If you do not pass the agent configuration, the operator directly use the latest stable version of the agent.
 
 . Check the Cluster Status
-
++
 Run the following commands to see the cluster status
 
 [source, shell]
@@ -115,7 +115,7 @@ The field `EXTERNAL-IP` is the address of your Hazelcast cluster.
 == Step 2. Create Persistent Map and Put Data
 
 . Create Persistent Map
-
++
 Run the following command to create the Map resource with Persistence enabled.
 
 [source, shell]
@@ -133,7 +133,7 @@ EOF
 
 [[Configure-Client]]
 . Configure the Hazelcast client to connect to the cluster external address.
-
++
 [tabs]
 ====
 
@@ -280,10 +280,11 @@ Current map size: 10
 For triggering backup, you need `bucketURI` where backup data will be stored in and `secret` with credentials for accessing the given Bucket URI.
 
 . Create Secret
-
++
 Run one of the following command to create the secret according to the cloud provider you want to backup.
 
-.AWS
+..AWS
++
 [source,bash]
 ----
 kubectl create secret generic <secret-name> --from-literal=region=<region> \
@@ -291,13 +292,15 @@ kubectl create secret generic <secret-name> --from-literal=region=<region> \
 	--from-literal=secret-access-key=<secret-access-key>
 ----
 
-.GCP
+..GCP
++
 [source,bash]
 ----
 kubectl create secret generic <secret-name> --from-file=google-credentials-path=<service_account_json_file>
 ----
 
-.Azure
+..Azure
++
 [source,bash]
 ----
 kubectl create secret generic <secret-name> \
@@ -306,7 +309,7 @@ kubectl create secret generic <secret-name> \
 ----
 
 . Trigger Backup
-
++
 Run the following command to trigger backup
 
 [source, shell]
@@ -324,7 +327,7 @@ EOF
 ----
 
 . Check the Status of the Backup
-
++
 Run the following command to check the status of the backup
 [source,bash]
 ----
@@ -341,7 +344,7 @@ hot-backup   Success
 == Step 3. Restore from External Backup
 
 . Delete the Hazelcast Cluster
-
++
 Run the following command to delete the Hazelcast cluster
 
 [source,bash]
@@ -350,7 +353,7 @@ kubectl delete hazelcast hazelcast
 ----
 
 . Create new Hazelcast Cluster
-
++
 For restoring you will use the secret that you already created.
 Also you should pass the `bucketURI` with exact path of the backup
 
@@ -391,7 +394,7 @@ EOF
 As you may see, the agent configuration is not set. Thus, the operator directly use the latest stable version of the agent.
 
 . Check the Cluster Status
-
++
 Run the following commands to see the cluster status
 
 [source, shell]
@@ -415,7 +418,7 @@ my-hazelcast   LoadBalancer   10.168.25.113   34.70.165.31   5701:32653/TCP,8080
 The field `EXTERNAL-IP` is the address of your Hazelcast cluster.
 
 . Check Map Size
-
++
 Configure the Hazelcast client to connect to the cluster external address as you did in <<Configure-Client, Configure the Hazelcast Client>>.
 
 Now you can start the application to check the map size and see if the restore is successful.
