@@ -1,10 +1,4 @@
-////
-Make sure to rename this file to the name of your repository and add the filename to the README. This filename must not conflict with any existing tutorials.
-////
-
-// Describe the title of your article by replacing 'Tutorial template' with the page name you want to publish.
-= Tutorial template
-// Add required variables
+= External Backup and Restore with Hazelcast
 :page-layout: tutorial
 :page-product: // Required: Define the product filter for this tutorial. Add one of the following: platform, imdg, cloud, operator
 :page-categories: // Optional: Define the categories for this tutorial. Check the current categories and choose an existing one, making sure to use title case. If you need to create a new category, message the docs team or create an issue. You can leave this blank or add one or more comma-separated categories in title case. 
