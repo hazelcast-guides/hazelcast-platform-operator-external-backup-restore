@@ -31,9 +31,9 @@ Before starting this tutorial, make sure that you meet the following prerequisit
 
 == Step 1. Start the Hazelcast Cluster
 
-. Create License Secret
+. Create a license secret
 +
-Hazelcast Hot Backup is an enterprise feature, so you need to create a secret with Hazelcast Enterprise License (if you don't have one, get a trial license key from this https://hazelcast.com/get-started/#deploymenttype-imdg[link]).
+Create a secret with your link:http://trialrequest.hazelcast.com/[Hazelcast Enterprise License].
 +
 [source, shell]
 ----
