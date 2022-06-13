@@ -13,6 +13,9 @@ content:
     start_paths: [tutorials, home]
   - url: https://github.com/hazelcast-guides/adoc-templates.git
     branches: antora-doc
+  - url: https://github.com/hazelcast-guides/hazelcast-platform-operator-external-backup-restore
+    branches: CN-379-backup-restore
+    start_path: docs
 ui: 
   bundle:
     url: https://github.com/hazelcast/hazelcast-docs-ui/releases/latest/download/ui-bundle.zip
