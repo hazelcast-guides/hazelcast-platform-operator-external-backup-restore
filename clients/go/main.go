@@ -17,7 +17,7 @@ func main() {
 	} else {
 		config := hazelcast.Config{}
 		cc := &config.Cluster
-		cc.Network.SetAddresses("34.70.165.31:5701")
+		cc.Network.SetAddresses("<EXTERNAL-IP>:5701")
 		ctx := context.TODO()
 		client, err := hazelcast.StartNewClientWithConfig(ctx, config)
 		if err != nil {

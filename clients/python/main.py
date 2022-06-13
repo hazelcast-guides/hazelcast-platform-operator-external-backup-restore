@@ -12,8 +12,7 @@ elif not (sys.argv[1] == "fill" or sys.argv[1] == "size"):
     print("Wrong argument, you should pass: fill or size")
 else:
     client = hazelcast.HazelcastClient(
-        cluster_members=["34.70.165.31"],
-        # <EXTERNAL-IP>
+        cluster_members=["<EXTERNAL-IP>"],
         use_public_ip=True,
     )
     print("Successful connection!", flush=True)

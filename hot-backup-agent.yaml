@@ -3,6 +3,6 @@ kind: HotBackup
 metadata:
   name: hot-backup
 spec:
-  hazelcastResourceName: hazelcast
+  hazelcastResourceName: my-hazelcast
   bucketURI: "s3://operator-backup"
   secret: "br-secret-s3"

@@ -15,7 +15,7 @@ public class Main {
             System.out.println("Wrong argument, you should pass: fill or size");
         } else{
             ClientConfig config = new ClientConfig();
-            config.getNetworkConfig().addAddress("34.70.165.31");
+            config.getNetworkConfig().addAddress("<EXTERNAL-IP>");
             HazelcastInstance client = HazelcastClient.newHazelcastClient(config);
             System.out.println("Successful connection!");
 

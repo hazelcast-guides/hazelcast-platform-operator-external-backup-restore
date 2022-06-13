@@ -218,7 +218,7 @@ Java::
 --
 [source, bash]
 ----
-cd java
+cd clients/java
 mvn package
 java -jar target/*jar-with-dependencies*.jar fill
 ----
@@ -229,7 +229,7 @@ NodeJS::
 --
 [source, bash]
 ----
-cd nodejs
+cd clients/nodejs
 npm install
 npm start fill
 ----
@@ -240,7 +240,7 @@ Go::
 --
 [source, bash]
 ----
-cd go
+cd clients/go
 go run main.go fill
 ----
 --
@@ -250,7 +250,7 @@ Python::
 --
 [source, bash]
 ----
-cd python
+cd clients/python
 pip install -r requirements.txt
 python main.py fill
 ----
@@ -332,7 +332,7 @@ kind: HotBackup
 metadata:
   name: hot-backup
 spec:
-  hazelcastResourceName: hazelcast
+  hazelcastResourceName: my-hazelcast
   bucketURI: "<bucketURI>"
   secret: <secret-name>
 EOF
@@ -363,7 +363,7 @@ Run the following command to delete the Hazelcast cluster
 +
 [source,bash]
 ----
-kubectl delete hazelcast hazelcast
+kubectl delete hazelcast my-hazelcast
 ----
 
 . Create new Hazelcast Cluster
@@ -401,7 +401,6 @@ spec:
     type: Smart
     discoveryServiceType: LoadBalancer
     memberAccess: NodePortExternalIP
-
 EOF
 ----
 +
@@ -445,7 +444,7 @@ Java::
 --
 [source, bash]
 ----
-cd java
+cd clients/java
 mvn package
 java -jar target/*jar-with-dependencies*.jar size
 ----
@@ -456,7 +455,7 @@ NodeJS::
 --
 [source, bash]
 ----
-cd nodejs
+cd clients/nodejs
 npm install
 npm start size
 ----
@@ -467,7 +466,7 @@ Go::
 --
 [source, bash]
 ----
-cd go
+cd clients/go
 go run main.go size
 ----
 --
@@ -477,7 +476,7 @@ Python::
 --
 [source, bash]
 ----
-cd python
+cd clients/python
 pip install -r requirements.txt
 python main.py size
 ----
