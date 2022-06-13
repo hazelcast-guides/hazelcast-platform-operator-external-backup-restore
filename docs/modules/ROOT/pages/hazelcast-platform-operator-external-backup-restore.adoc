@@ -394,7 +394,7 @@ spec:
 EOF
 ----
 
-NOTE: As you may see, the agent configuration is not set. Thus, the operator directly use the latest stable version of the agent.
+As you may see, the agent configuration is not set. Thus, the operator directly use the latest stable version of the agent.
 
 === Check the Cluster Status
 
