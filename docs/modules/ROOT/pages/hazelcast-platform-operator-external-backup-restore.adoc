@@ -53,11 +53,8 @@ metadata:
   name: my-hazelcast
 spec:
   clusterSize: 3
-  repository: 'docker.io/hazelcast/hazelcast-enterprise'
-  version: '5.1-slim'
   licenseKeySecret: hazelcast-license-key
   persistence:
-    backupType: "External"
     baseDir: "/data/hot-restart/"
     clusterDataRecoveryPolicy: "FullRecoveryOnly"
     pvc:
@@ -65,7 +62,6 @@ spec:
       requestStorage: 8Gi
   agent:
     repository: hazelcast/platform-operator-agent
-    version: 0.1.0
   exposeExternally:
     type: Smart
     discoveryServiceType: LoadBalancer
@@ -96,7 +92,7 @@ my-hazelcast-1   2/2     Running   0          3m16s
 my-hazelcast-2   2/2     Running   0          2m50s
 ----
 +
-As you can see from the pod states, when external backup is used, the Backup Agent container will
+As you can see from the pod states, when backup is used, the Backup Agent container will
 be deployed with the Hazelcast container in the same Pod. The agent is responsible for backing data up into the external storage.
 
 . Get the Address of the Hazelcast Cluster
@@ -338,6 +334,9 @@ spec:
 EOF
 ----
 
+*Example URI -> "s3://operator-backup?prefix=hazelcast/2022-06-08-17-01-20/"*
+
+
 . Check the Status of the Backup
 +
 Run the following command to check the status of the backup
@@ -368,10 +367,7 @@ kubectl delete hazelcast my-hazelcast
 
 . Create new Hazelcast Cluster
 +
-For restoring you will use the secret that you already created.
-Also you should pass the `bucketURI` with exact path of the backup
-+
-*Example URI -> "s3://operator-backup?prefix=hazelcast/2022-06-08-17-01-20/"*
+For restoring you will use the `HotBackup` resource you have created.
 +
 Run the following command to create the Hazelcast cluster. Before the Hazelcast cluster is started,
 the operator starts the Restore Agent(InitContainer) which restores the backup data.
@@ -385,8 +381,6 @@ metadata:
   name: my-hazelcast
 spec:
   clusterSize: 3
-  repository: 'docker.io/hazelcast/hazelcast-enterprise'
-  version: '5.1-slim'
   licenseKeySecret: hazelcast-license-key
   persistence:
     baseDir: "/data/hot-restart/"
@@ -395,8 +389,7 @@ spec:
       accessModes: ["ReadWriteOnce"]
       requestStorage: 8Gi
     restore:
-      bucketURI: "<bucketURI>"
-      secret: <secret-name>
+      hotbackupResourceName: hot-backup
   exposeExternally:
     type: Smart
     discoveryServiceType: LoadBalancer
