@@ -389,7 +389,7 @@ spec:
       accessModes: ["ReadWriteOnce"]
       requestStorage: 8Gi
     restore:
-      hotbackupResourceName: hot-backup
+      hotBackupResourceName: hot-backup
   exposeExternally:
     type: Smart
     discoveryServiceType: LoadBalancer

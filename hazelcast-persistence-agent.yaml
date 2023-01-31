@@ -4,8 +4,6 @@ metadata:
   name: my-hazelcast
 spec:
   clusterSize: 3
-  repository: 'docker.io/hazelcast/hazelcast-enterprise'
-  version: '5.1-slim'
   licenseKeySecret: hazelcast-license-key
   persistence:
     backupType: "External"
@@ -16,7 +14,6 @@ spec:
       requestStorage: 8Gi
   agent:
     repository: hazelcast/platform-operator-agent
-    version: 0.1.0
   exposeExternally:
     type: Smart
     discoveryServiceType: LoadBalancer
