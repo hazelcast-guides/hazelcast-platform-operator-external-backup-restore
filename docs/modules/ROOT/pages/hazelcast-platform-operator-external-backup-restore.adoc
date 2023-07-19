@@ -128,7 +128,35 @@ spec:
 EOF
 ----
 
-. Configure the Hazelcast client to connect to the cluster external address. [[Configure-Client]]
+. Configure the CLC to connect to the cluster. (Option 1)
++
+Before using CLC, it should be installed in your system. Check the installation instructions for CLC: xref:clc:install-clc.adoc[]
++
+Run the following command for adding the cluster config to the CLC.
++
+[source, bash]
+----
+clc config add hz-1 cluster.name=dev cluster.address=<EXTERNAL-IP>
+----
++
+Run the following command to fill a map.
++
+[source, bash]
+----
+for i in {1..10};
+do
+   clc -c hz-1 map set --name map1 key-$i value-$i;
+done
+----
++
+Run the following command to check the map size.
++
+[source, bash]
+----
+clc -c hz-1 map size --name map1
+----
+
+. Configure the Hazelcast client to connect to the cluster. (Option 2) [[Configure-Client]]
 +
 [tabs]
 ====
@@ -423,7 +451,25 @@ my-hazelcast   LoadBalancer   10.168.25.113   34.70.165.31   5701:32653/TCP,8080
 +
 The field `EXTERNAL-IP` is the address of your Hazelcast cluster.
 
-. Check Map Size
+. Check the Map Size using the CLC (Option 1)
++
+Before using CLC, it should be installed in your system. Check the installation instructions for CLC: xref:clc:install-clc.adoc[]
++
+Run the following command for adding the cluster config to the CLC.
++
+[source, bash]
+----
+clc config add hz-2 cluster.name=dev cluster.address=<EXTERNAL-IP>
+----
++
+Run the following command to check the map size.
++
+[source, bash]
+----
+clc -c hz-2 map size --name map1
+----
+
+. Check the Map Size by the Client (Option 2)
 +
 Configure the Hazelcast client to connect to the cluster external address as you did in <<Configure-Client, Configure the Hazelcast Client>>.
 +
