@@ -217,7 +217,8 @@ client = hazelcast.HazelcastClient(
 
 ====
 +
-Now you can start to fill the map.
+. Start the client to fill the map.
+
 +
 [tabs]
 ====
@@ -402,10 +403,10 @@ spec:
   secret: <secret-name>
 EOF
 ----
-
++
 *Example URI -> "s3://operator-backup?prefix=hazelcast/2022-06-08-17-01-20/"*
 
-
++
 . Check the Status of the Backup
 +
 Run the following command to check the status of the backup
@@ -496,7 +497,7 @@ The field `EXTERNAL-IP` is the address of your Hazelcast cluster.
 +
 Configure the Hazelcast client to connect to the cluster external address as you did in <<Configure-Client, Configure the Hazelcast Client>>.
 +
-Now you can start the application to check the map size and see if the restore is successful.
+Start the client to check the map size and see if the restore is successful.
 +
 [tabs]
 ====
