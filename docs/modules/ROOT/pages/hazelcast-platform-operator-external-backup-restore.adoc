@@ -128,10 +128,23 @@ spec:
 EOF
 ----
 
-. Configure the Hazelcast client to connect to the cluster external address. [[Configure-Client]]
+. Configure the Hazelcast client to connect to the cluster. [[Configure-Client]]
 +
 [tabs]
 ====
+
+CLC::
++
+--
+NOTE: Before using CLC, it should be installed in your system. Check the installation instructions for CLC: xref:clc:ROOT:install-clc.adoc[].
+
+Run the following command for adding the cluster config to the CLC.
+
+[source, bash]
+----
+clc config add hz cluster.name=dev cluster.address=<EXTERNAL-IP>
+----
+--
 
 Java::
 +
@@ -204,10 +217,32 @@ client = hazelcast.HazelcastClient(
 
 ====
 +
-Now you can start the application to fill the map.
+. Start the client to fill the map.
+
 +
 [tabs]
 ====
+
+CLC::
++
+--
+Run the following command to fill a map.
+
+[source, bash]
+----
+for i in {1..10};
+do
+   clc -c hz map set --name map1 key-$i value-$i;
+done
+----
+
+Run the following command to check the map size.
+
+[source, bash]
+----
+clc -c hz map size --name map1
+----
+--
 
 Java::
 +
@@ -217,6 +252,19 @@ Java::
 cd clients/java
 mvn package
 java -jar target/*jar-with-dependencies*.jar fill
+----
+
+You should see the following output.
+
+[source, shell]
+----
+Successful connection!
+Starting to fill the map with random entries.
+Current map size: 2
+Current map size: 3
+Current map size: 4
+....
+....
 ----
 --
 
@@ -229,6 +277,19 @@ cd clients/nodejs
 npm install
 npm start fill
 ----
+
+You should see the following output.
+
+[source, shell]
+----
+Successful connection!
+Starting to fill the map with random entries.
+Current map size: 2
+Current map size: 3
+Current map size: 4
+....
+....
+----
 --
 
 Go::
@@ -238,6 +299,19 @@ Go::
 ----
 cd clients/go
 go run main.go fill
+----
+
+You should see the following output.
+
+[source, shell]
+----
+Successful connection!
+Starting to fill the map with random entries.
+Current map size: 2
+Current map size: 3
+Current map size: 4
+....
+....
 ----
 --
 
@@ -250,12 +324,9 @@ cd clients/python
 pip install -r requirements.txt
 python main.py fill
 ----
---
 
-====
-+
 You should see the following output.
-+
+
 [source, shell]
 ----
 Successful connection!
@@ -263,13 +334,12 @@ Starting to fill the map with random entries.
 Current map size: 2
 Current map size: 3
 Current map size: 4
-Current map size: 5
-Current map size: 6
-Current map size: 7
-Current map size: 8
-Current map size: 9
-Current map size: 10
+....
+....
 ----
+--
+
+====
 
 == Step 3. Trigger External Backup
 
@@ -333,10 +403,10 @@ spec:
   secret: <secret-name>
 EOF
 ----
-
++
 *Example URI -> "s3://operator-backup?prefix=hazelcast/2022-06-08-17-01-20/"*
 
-
++
 . Check the Status of the Backup
 +
 Run the following command to check the status of the backup
@@ -423,14 +493,23 @@ my-hazelcast   LoadBalancer   10.168.25.113   34.70.165.31   5701:32653/TCP,8080
 +
 The field `EXTERNAL-IP` is the address of your Hazelcast cluster.
 
-. Check Map Size
+. Check the Map Size
 +
 Configure the Hazelcast client to connect to the cluster external address as you did in <<Configure-Client, Configure the Hazelcast Client>>.
 +
-Now you can start the application to check the map size and see if the restore is successful.
+Start the client to check the map size and see if the restore is successful.
 +
 [tabs]
 ====
+
+CLC::
++
+--
+[source, bash]
+----
+clc -c hz map size --name map1
+----
+--
 
 Java::
 +
@@ -440,6 +519,14 @@ Java::
 cd clients/java
 mvn package
 java -jar target/*jar-with-dependencies*.jar size
+----
+
+You should see the following output.
+
+[source, shell]
+----
+Successful connection!
+Current map size: 12
 ----
 --
 
@@ -452,6 +539,14 @@ cd clients/nodejs
 npm install
 npm start size
 ----
+
+You should see the following output.
+
+[source, shell]
+----
+Successful connection!
+Current map size: 12
+----
 --
 
 Go::
@@ -461,6 +556,14 @@ Go::
 ----
 cd clients/go
 go run main.go size
+----
+
+You should see the following output.
+
+[source, shell]
+----
+Successful connection!
+Current map size: 12
 ----
 --
 
@@ -473,17 +576,17 @@ cd clients/python
 pip install -r requirements.txt
 python main.py size
 ----
---
 
-====
-+
 You should see the following output.
-+
+
 [source, shell]
 ----
 Successful connection!
 Current map size: 12
 ----
+--
+
+====
 
 == Clean Up
 
