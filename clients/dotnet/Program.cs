@@ -48,7 +48,7 @@ namespace Client
                 Console.WriteLine("Starting to fill the map with random entries.");
                 while (true)
                 {
-                    int num = random.Next(100_000);
+                    var num = random.Next(100_000);
                     var key = $"key-{num}";
                     var value = $"value-{num}";
                     await map.PutAsync(key, value);
