@@ -30,6 +30,14 @@ Before starting this tutorial, make sure that you meet the following prerequisit
 * Created blob storage and access credentials in one of the cloud providers: https://aws.amazon.com/s3/[AWS] - https://cloud.google.com/storage/[GCP] - https://azure.microsoft.com/en-us/services/storage/blobs/[Azure]
 
 == Step 1. Start the Hazelcast Cluster
+To access all examples, clone the following repository:
+
+[source, shell]
+
+git clone https://github.com/hazelcast-guides/hazelcast-platform-operator-external-backup-restore.git
+cd hazelcast-platform-operator-external-backup-restore
+
+You can find examples under the `clients` directory.
 
 . Create a license secret
 +
@@ -214,6 +222,28 @@ client = hazelcast.HazelcastClient(
 )
 ----
 --
+.NET::
++
+--
+[source, cs]
+----
+var options = new HazelcastOptionsBuilder()
+    .With(args)
+    .With((configuration, options) =>
+    {
+        options.LoggerFactory.Creator = () => LoggerFactory.Create(loggingBuilder =>
+            loggingBuilder
+                .AddConfiguration(configuration.GetSection("logging"))
+                .AddConsole());
+
+        options.Networking.Addresses.Add("<EXTERNAL-IP>:5701");
+        options.Networking.UsePublicAddresses = true;
+
+    })
+    .Build();
+----
+
+
 
 ====
 +
@@ -327,6 +357,26 @@ python main.py fill
 
 You should see the following output.
 
+[source, shell]
+----
+Successful connection!
+Starting to fill the map with random entries.
+Current map size: 2
+Current map size: 3
+Current map size: 4
+....
+....
+----
+--
+.NET::
++
+--
+[source, bash]
+----
+cd clients/dotnet
+dotnet build
+dotnet run fill
+----
 [source, shell]
 ----
 Successful connection!
@@ -575,6 +625,23 @@ Python::
 cd clients/python
 pip install -r requirements.txt
 python main.py size
+----
+
+You should see the following output.
+
+[source, shell]
+----
+Successful connection!
+Current map size: 12
+----
+--
+.NET::
++
+--
+[source, bash]
+----
+cd clients/dotnet
+dotnet run size
 ----
 
 You should see the following output.
