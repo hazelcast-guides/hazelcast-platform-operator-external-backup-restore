@@ -86,8 +86,8 @@ Run the following commands to see the cluster status
 [source, shell]
 ----
 $ kubectl get hazelcast my-hazelcast
-NAME           STATUS    MEMBERS   EXTERNAL-ADDRESSES
-my-hazelcast   Running   3/3       34.70.165.31:5701,34.70.165.31:8080
+NAME           STATUS    MEMBERS
+my-hazelcast   Running   3/3
 ----
 +
 [source, shell]
@@ -105,17 +105,17 @@ be deployed with the Hazelcast container in the same Pod. The agent is responsib
 
 . Get the Address of the Hazelcast Cluster
 +
-After verifying that the cluster is `Running` and all the members are ready, run the following command to find the discovery service address.
+After verifying that the cluster is `Running` and all the members are ready, run the following command to find the discovery address.
 
 +
 [source, shell]
 ----
-$ kubectl get service my-hazelcast
-NAME           TYPE           CLUSTER-IP      EXTERNAL-IP    PORT(S)                         AGE
-my-hazelcast   LoadBalancer   10.168.25.113   34.70.165.31   5701:32653/TCP,8080:32162/TCP   69m
+$ kubectl get hazelcastendpoint my-hazelcast
+NAME           TYPE        ADDRESS
+my-hazelcast   Discovery   35.188.131.33:5701
 ----
 +
-The field `EXTERNAL-IP` is the address of your Hazelcast cluster.
+The `ADDRESS` column displays the external address of your Hazelcast cluster.
 
 == Step 2. Create Persistent Map and Put Data
 
@@ -526,22 +526,20 @@ Run the following commands to see the cluster status
 [source, shell]
 ----
 $ kubectl get hazelcast my-hazelcast
-NAME           STATUS    MEMBERS   EXTERNAL-ADDRESSES
-my-hazelcast   Running   3/3       34.70.165.31:5701,34.70.165.31:8080
+NAME           STATUS    MEMBERS
+my-hazelcast   Running   3/3
 ----
 +
-Since we recreate the Hazelcast cluster, services are also recreated. The `EXTERNAL-IP` may change.
-+
-After verifying that the cluster is `Running` and all the members are ready, run the following command to find the discovery service address.
+After verifying that the cluster is `Running` and all the members are ready, run the following command to find the discovery address.
 +
 [source, shell]
 ----
-$ kubectl get service my-hazelcast
-NAME           TYPE           CLUSTER-IP      EXTERNAL-IP    PORT(S)                         AGE
-my-hazelcast   LoadBalancer   10.168.25.113   34.70.165.31   5701:32653/TCP,8080:32162/TCP   69m
+$ kubectl get hazelcastendpoint my-hazelcast
+NAME           TYPE        ADDRESS
+my-hazelcast   Discovery   35.189.133.39:5701
 ----
 +
-The field `EXTERNAL-IP` is the address of your Hazelcast cluster.
+Since we recreate the Hazelcast cluster, services are also recreated. The `ADDRESS` may change.
 
 . Check the Map Size
 +
