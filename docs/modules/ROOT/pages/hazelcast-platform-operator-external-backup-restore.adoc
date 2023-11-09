@@ -262,7 +262,7 @@ Run the following command to fill a map.
 ----
 for i in {1..10};
 do
-   clc -c hz map set --name map1 key-$i value-$i;
+   clc -c hz map set --name persistent-map key-$i value-$i;
 done
 ----
 
@@ -270,7 +270,7 @@ Run the following command to check the map size.
 
 [source, bash]
 ----
-clc -c hz map size --name map1
+clc -c hz map size --name persistent-map
 ----
 --
 
@@ -555,7 +555,7 @@ CLC::
 --
 [source, bash]
 ----
-clc -c hz map size --name map1
+clc -c hz map size --name persistent-map
 ----
 --
 
