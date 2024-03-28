@@ -105,21 +105,18 @@ be deployed with the Hazelcast container in the same Pod. The agent is responsib
 
 . Get the Address of the Hazelcast Cluster
 +
-After verifying that the cluster is `Running` and all the members are ready, run the following command to find the discovery and member addresses.
+After verifying that the cluster is `Running` and all the members are ready, run the following command to find the discovery address.
 
 +
 [source, shell]
 ----
-$ kubectl get hazelcastendpoint --selector="app.kubernetes.io/instance=my-hazelcast"
-NAME                 TYPE        ADDRESS
-my-hazelcast         Discovery   35.232.180.22:5701
-my-hazelcast-0       Member      34.31.31.174:30393
-my-hazelcast-0-wan   WAN         34.31.31.174:30483
-my-hazelcast-1       Member      34.134.146.100:30894
-my-hazelcast-1-wan   WAN         34.134.146.100:31597
-my-hazelcast-2       Member      34.72.7.175:30606
-my-hazelcast-2-wan   WAN         34.72.7.175:31121
-my-hazelcast-wan     WAN         35.232.180.22:5710
+$ kubectl get hazelcastendpoint my-hazelcast
+NAME               TYPE        ADDRESS
+my-hazelcast       Discovery   34.30.60.128:5701
+my-hazelcast-0     Member      34.122.120.18:30776
+my-hazelcast-1     Member      34.27.85.200:30086
+my-hazelcast-2     Member      34.173.81.209:30690
+my-hazelcast-wan   WAN         34.30.60.128:5710
 ----
 +
 The `ADDRESS` column displays the external address of your Hazelcast cluster.
@@ -537,20 +534,17 @@ NAME           STATUS    MEMBERS
 my-hazelcast   Running   3/3
 ----
 +
-After verifying that the cluster is `Running` and all the members are ready, run the following command to find the discovery and member addresses.
+After verifying that the cluster is `Running` and all the members are ready, run the following command to find the discovery address.
 +
 [source, shell]
 ----
-$ kubectl get hazelcastendpoint --selector="app.kubernetes.io/instance=my-hazelcast"
-NAME                 TYPE        ADDRESS
-my-hazelcast         Discovery   35.232.180.22:5701
-my-hazelcast-0       Member      34.31.31.174:30393
-my-hazelcast-0-wan   WAN         34.31.31.174:30483
-my-hazelcast-1       Member      34.134.146.100:30894
-my-hazelcast-1-wan   WAN         34.134.146.100:31597
-my-hazelcast-2       Member      34.72.7.175:30606
-my-hazelcast-2-wan   WAN         34.72.7.175:31121
-my-hazelcast-wan     WAN         35.232.180.22:5710
+$ kubectl get hazelcastendpoint my-hazelcast
+NAME               TYPE        ADDRESS
+my-hazelcast       Discovery   34.33.93.139:5701
+my-hazelcast-0     Member      34.122.120.18:30776
+my-hazelcast-1     Member      34.27.85.200:30086
+my-hazelcast-2     Member      34.173.81.209:30690
+my-hazelcast-wan   WAN         34.33.93.139:5710
 ----
 +
 Since we recreate the Hazelcast cluster, services are also recreated. The `ADDRESS` may change.
