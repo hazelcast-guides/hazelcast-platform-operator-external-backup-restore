@@ -23,5 +23,6 @@ else:
         while True:
             random_number = str(random.randrange(0, 100000))
             m.put("key-" + random_number, "value-" + random_number)
+            print("Current map size:", m.size())
     else:
         print("Current map size:", m.size())
