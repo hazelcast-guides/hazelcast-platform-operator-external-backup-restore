@@ -26,18 +26,10 @@ Before starting this tutorial, make sure that you meet the following prerequisit
 
 * Up and running https://kubernetes.io/[Kubernetes] cluster
 * Kubernetes command-line tool, https://kubernetes.io/docs/tasks/tools/#kubectl[kubectl]
-* Deployed xref:operator:ROOT:index.adoc[Hazelcast Platform Operator]
+* Deployed xref:operator:ROOT:get-started.adoc[Hazelcast Platform Operator]
 * Created blob storage and access credentials in one of the cloud providers: https://aws.amazon.com/s3/[AWS] - https://cloud.google.com/storage/[GCP] - https://azure.microsoft.com/en-us/services/storage/blobs/[Azure]
 
 == Step 1. Start the Hazelcast Cluster
-To access all examples, clone the following repository:
-
-[source, shell]
-
-git clone https://github.com/hazelcast-guides/hazelcast-platform-operator-external-backup-restore.git
-cd hazelcast-platform-operator-external-backup-restore
-
-You can find examples under the `clients` directory.
 
 . Create a license secret
 +
@@ -54,26 +46,8 @@ Run the following command to create the Hazelcast cluster with Persistence enabl
 +
 [source, shell]
 ----
-cat <<EOF | kubectl apply -f -
-apiVersion: hazelcast.com/v1alpha1
-kind: Hazelcast
-metadata:
-  name: my-hazelcast
-spec:
-  clusterSize: 3
-  licenseKeySecret: hazelcast-license-key
-  persistence:
-    baseDir: "/data/hot-restart/"
-    clusterDataRecoveryPolicy: "FullRecoveryOnly"
-    pvc:
-      accessModes: ["ReadWriteOnce"]
-      requestStorage: 8Gi
-  agent:
-    repository: hazelcast/platform-operator-agent
-  exposeExternally:
-    type: Smart
-    discoveryServiceType: LoadBalancer
-    memberAccess: NodePortExternalIP
+kubectl apply -f - <<EOF
+include::ROOT:example$/operator-external-backup/hazelcast-persistence.yaml[]
 EOF
 ----
 +
@@ -93,7 +67,6 @@ my-hazelcast   Running   3/3
 [source, shell]
 ----
 $ kubectl get pods -l app.kubernetes.io/instance=my-hazelcast
-
 NAME             READY   STATUS    RESTARTS   AGE
 my-hazelcast-0   2/2     Running   0          3m43s
 my-hazelcast-1   2/2     Running   0          3m16s
@@ -129,18 +102,23 @@ Run the following command to create the Map resource with Persistence enabled.
 +
 [source, shell]
 ----
-cat <<EOF | kubectl apply -f -
-apiVersion: hazelcast.com/v1alpha1
-kind: Map
-metadata:
-  name: persistent-map
-spec:
-  hazelcastResourceName: my-hazelcast
-  persistenceEnabled: true
+kubectl apply -f - <<EOF
+include::ROOT:example$/operator-external-backup/map-persistence.yaml[]
 EOF
 ----
 
 . Configure the Hazelcast client to connect to the cluster. [[Configure-Client]]
++
+To access all sample clients, clone the following repository:
++
+[source, shell]
+----
+git clone https://github.com/hazelcast-guides/hazelcast-platform-operator-external-backup-restore.git
+cd hazelcast-platform-operator-external-backup-restore
+----
++
+The sample code(excluding CLC) for this tutorial is in the link:https://github.com/hazelcast-guides/hazelcast-platform-operator-external-backup-restore/tree/master/docs/modules/ROOT/examples/operator-external-backup[`docs/modules/ROOT/examples/operator-external-backup`] directory.
+
 +
 [tabs]
 ====
@@ -163,8 +141,7 @@ Java::
 --
 [source, java]
 ----
-ClientConfig config = new ClientConfig();
-config.getNetworkConfig().addAddress("<EXTERNAL-IP>");
+include::ROOT:example$/operator-external-backup/java/src/main/java/com/hazelcast/Main.java[]
 ----
 --
 
@@ -173,16 +150,7 @@ NodeJS::
 --
 [source, javascript]
 ----
-const { Client } = require('hazelcast-client');
-
-const clientConfig = {
-    network: {
-        clusterMembers: [
-            '<EXTERNAL-IP>'
-        ]
-    }
-};
-const client = await Client.newHazelcastClient(clientConfig);
+include::ROOT:example$/operator-external-backup/nodejs/client.js[]
 ----
 --
 
@@ -191,22 +159,7 @@ Go::
 --
 [source, go]
 ----
-import (
-	"log"
-
-	"github.com/hazelcast/hazelcast-go-client"
-)
-
-func main() {
-	config := hazelcast.Config{}
-	cc := &config.Cluster
-	cc.Network.SetAddresses("<EXTERNAL-IP>")
-	ctx := context.TODO()
-	client, err := hazelcast.StartNewClientWithConfig(ctx, config)
-	if err != nil {
-		panic(err)
-	}
-}
+include::ROOT:example$/operator-external-backup/go/main.go[]
 ----
 --
 
@@ -215,15 +168,7 @@ Python::
 --
 [source, python]
 ----
-import logging
-import hazelcast
-
-logging.basicConfig(level=logging.INFO)
-
-client = hazelcast.HazelcastClient(
-    cluster_members=["<EXTERNAL-IP>"],
-    use_public_ip=True,
-)
+include::ROOT:example$/operator-external-backup/python/main.py[]
 ----
 --
 .NET::
@@ -231,20 +176,7 @@ client = hazelcast.HazelcastClient(
 --
 [source, cs]
 ----
-var options = new HazelcastOptionsBuilder()
-    .With(args)
-    .With((configuration, options) =>
-    {
-        options.LoggerFactory.Creator = () => LoggerFactory.Create(loggingBuilder =>
-            loggingBuilder
-                .AddConfiguration(configuration.GetSection("logging"))
-                .AddConsole());
-
-        options.Networking.Addresses.Add("<EXTERNAL-IP>:5701");
-        options.Networking.UsePublicAddresses = true;
-
-    })
-    .Build();
+include::ROOT:example$/operator-external-backup/dotnet/Program.cs[]
 ----
 --
 
@@ -283,7 +215,7 @@ Java::
 --
 [source, bash]
 ----
-cd clients/java
+cd java
 mvn package
 java -jar target/*jar-with-dependencies*.jar fill
 ----
@@ -307,7 +239,7 @@ NodeJS::
 --
 [source, bash]
 ----
-cd clients/nodejs
+cd nodejs
 npm install
 npm start fill
 ----
@@ -331,7 +263,7 @@ Go::
 --
 [source, bash]
 ----
-cd clients/go
+cd go
 go run main.go fill
 ----
 
@@ -354,7 +286,7 @@ Python::
 --
 [source, bash]
 ----
-cd clients/python
+cd python
 pip install -r requirements.txt
 python main.py fill
 ----
@@ -377,7 +309,7 @@ Current map size: 4
 --
 [source, bash]
 ----
-cd clients/dotnet
+cd dotnet
 dotnet build
 dotnet run fill
 ----
@@ -412,7 +344,7 @@ AWS::
 --
 [source,bash]
 ----
-kubectl create secret generic <secret-name> --from-literal=region=<region> \
+kubectl create secret generic <external-bucket-secret-name> --from-literal=region=<region> \
 	--from-literal=access-key-id=<access-key-id> \
 	--from-literal=secret-access-key=<secret-access-key>
 ----
@@ -423,7 +355,7 @@ GCP::
 --
 [source,bash]
 ----
-kubectl create secret generic <secret-name> --from-file=google-credentials-path=<service_account_json_file>
+kubectl create secret generic <external-bucket-secret-name> --from-file=google-credentials-path=<service_account_json_file>
 ----
 --
 
@@ -432,7 +364,7 @@ Azure::
 --
 [source,bash]
 ----
-kubectl create secret generic <secret-name> \
+kubectl create secret generic <external-bucket-secret-name> \
 	--from-literal=storage-account=<storage-account> \
 	--from-literal=storage-key=<storage-key>
 ----
@@ -446,15 +378,8 @@ Run the following command to trigger backup
 +
 [source, shell]
 ----
-cat <<EOF | kubectl apply -f -
-apiVersion: hazelcast.com/v1alpha1
-kind: HotBackup
-metadata:
-  name: hot-backup
-spec:
-  hazelcastResourceName: my-hazelcast
-  bucketURI: "<bucketURI>"
-  secret: <secret-name>
+kubectl apply -f - <<EOF
+include::ROOT:example$/operator-external-backup/hot-backup-agent.yaml[]
 EOF
 ----
 +
@@ -498,26 +423,8 @@ the operator starts the Restore Agent(InitContainer) which restores the backup d
 +
 [source, shell]
 ----
-cat <<EOF | kubectl apply -f -
-apiVersion: hazelcast.com/v1alpha1
-kind: Hazelcast
-metadata:
-  name: my-hazelcast
-spec:
-  clusterSize: 3
-  licenseKeySecret: hazelcast-license-key
-  persistence:
-    baseDir: "/data/hot-restart/"
-    clusterDataRecoveryPolicy: "FullRecoveryOnly"
-    pvc:
-      accessModes: ["ReadWriteOnce"]
-      requestStorage: 8Gi
-    restore:
-      hotBackupResourceName: hot-backup
-  exposeExternally:
-    type: Smart
-    discoveryServiceType: LoadBalancer
-    memberAccess: NodePortExternalIP
+kubectl apply -f - <<EOF
+include::ROOT:example$/operator-external-backup/hazelcast-persistence-restore.yaml[]
 EOF
 ----
 +
@@ -572,7 +479,7 @@ Java::
 --
 [source, bash]
 ----
-cd clients/java
+cd java
 mvn package
 java -jar target/*jar-with-dependencies*.jar size
 ----
@@ -591,7 +498,7 @@ NodeJS::
 --
 [source, bash]
 ----
-cd clients/nodejs
+cd nodejs
 npm install
 npm start size
 ----
@@ -610,7 +517,7 @@ Go::
 --
 [source, bash]
 ----
-cd clients/go
+cd go
 go run main.go size
 ----
 
@@ -628,7 +535,7 @@ Python::
 --
 [source, bash]
 ----
-cd clients/python
+cd python
 pip install -r requirements.txt
 python main.py size
 ----
@@ -646,7 +553,7 @@ Current map size: 12
 --
 [source, bash]
 ----
-cd clients/dotnet
+cd dotnet
 dotnet run size
 ----
 
@@ -667,7 +574,7 @@ To clean up the created resources remove the all Custom Resources and PVCs.
 
 [source, shell]
 ----
-kubectl delete secret <secret-name>
+kubectl delete secret <external-bucket-secret-name>
 kubectl delete secret hazelcast-license-key
 kubectl delete $(kubectl get hazelcast,hotbackup,map -o name)
 kubectl delete pvc -l "app.kubernetes.io/managed-by=hazelcast-platform-operator"
