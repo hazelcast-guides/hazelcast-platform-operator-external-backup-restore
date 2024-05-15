@@ -6,12 +6,14 @@ spec:
   clusterSize: 3
   licenseKeySecret: hazelcast-license-key
   persistence:
+    backupType: "External"
+    baseDir: "/data/hot-restart/"
     clusterDataRecoveryPolicy: "FullRecoveryOnly"
     pvc:
       accessModes: ["ReadWriteOnce"]
       requestStorage: 8Gi
-    restore:
-      hotBackupResourceName: hot-backup
+  agent:
+    repository: hazelcast/platform-operator-agent
   exposeExternally:
     type: Smart
     discoveryServiceType: LoadBalancer
