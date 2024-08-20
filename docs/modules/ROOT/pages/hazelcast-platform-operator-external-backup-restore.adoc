@@ -85,10 +85,6 @@ After verifying that the cluster is `Running` and all the members are ready, run
 $ kubectl get hazelcastendpoint my-hazelcast
 NAME               TYPE        ADDRESS
 my-hazelcast       Discovery   34.30.60.128:5701
-my-hazelcast-0     Member      34.122.120.18:30776
-my-hazelcast-1     Member      34.27.85.200:30086
-my-hazelcast-2     Member      34.173.81.209:30690
-my-hazelcast-wan   WAN         34.30.60.128:5710
 ----
 +
 The `ADDRESS` column displays the external address of your Hazelcast cluster.
