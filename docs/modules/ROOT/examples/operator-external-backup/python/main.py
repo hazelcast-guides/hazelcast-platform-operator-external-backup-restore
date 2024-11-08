@@ -13,7 +13,7 @@ elif not (sys.argv[1] == "fill" or sys.argv[1] == "size"):
 else:
     client = hazelcast.HazelcastClient(
         cluster_members=["<EXTERNAL-IP>"],
-        use_public_ip=True,
+        smart_routing=False,
     )
     print("Successful connection!", flush=True)
     m = client.get_map("persistent-map").blocking()

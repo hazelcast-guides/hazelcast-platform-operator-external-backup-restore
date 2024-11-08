@@ -2,6 +2,8 @@ package com.hazelcast;
 
 import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.client.config.ClientConfig;
+import com.hazelcast.client.config.ClientNetworkConfig;
+import com.hazelcast.client.impl.connection.tcp.RoutingMode;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.map.IMap;
 
@@ -14,9 +16,11 @@ public class Main {
         } else if (!((args[0].equals("fill") || args[0].equals("size")))) {
             System.out.println("Wrong argument, you should pass: fill or size");
         } else{
-            ClientConfig config = new ClientConfig();
-            config.getNetworkConfig().addAddress("<EXTERNAL-IP>");
-            HazelcastInstance client = HazelcastClient.newHazelcastClient(config);
+            ClientConfig clientConfig = new ClientConfig();
+            ClientNetworkConfig networkConfig = clientConfig.getNetworkConfig();
+            networkConfig.addAddress("<EXTERNAL-IP>");
+            networkConfig.getClusterRoutingConfig().setRoutingMode(RoutingMode.SINGLE_MEMBER);
+            HazelcastInstance client = HazelcastClient.newHazelcastClient(clientConfig);
             System.out.println("Successful connection!");
 
             IMap<String, String> map = client.getMap("persistent-map");

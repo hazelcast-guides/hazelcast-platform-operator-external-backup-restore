@@ -41,7 +41,7 @@ kubectl create secret generic hazelcast-license-key --from-literal=license-key=<
 
 . Create the Hazelcast Cluster
 +
-Run the following command to create the Hazelcast cluster with Persistence enabled using External type.
+Run the following command to create the Hazelcast cluster with Persistence enabled.
 +
 [source, shell]
 ----
@@ -50,7 +50,6 @@ include::ROOT:example$/operator-external-backup/hazelcast-persistence.yaml[]
 EOF
 ----
 +
-NOTE: The agent configuration is optional. If you do not pass the agent configuration, the operator directly use the latest stable version of the agent.
 
 . Check the Cluster Status
 +
@@ -72,8 +71,7 @@ my-hazelcast-1   2/2     Running   0          3m16s
 my-hazelcast-2   2/2     Running   0          2m50s
 ----
 +
-As you can see from the pod states, when backup is used, the Backup Agent container will
-be deployed with the Hazelcast container in the same Pod. The agent is responsible for backing data up into the external storage.
+As you can see from the pod states, the agent container will be deployed with the Hazelcast container in the same Pod. The agent is responsible for backing data up into the external storage.
 
 . Get the Address of the Hazelcast Cluster
 +
@@ -100,6 +98,24 @@ Run the following command to create the Map resource with Persistence enabled.
 kubectl apply -f - <<EOF
 include::ROOT:example$/operator-external-backup/map-persistence.yaml[]
 EOF
+----
+
+
+. Check the Status of the Backup
++
+Run the following command to check the status of the map configuration.
++
+[source,bash]
+----
+kubectl get map persistent-map
+----
++
+The status of the map is displayed in the output.
++
+[source,bash]
+----
+NAME             STATUS
+persistent-map   Success
 ----
 
 . Configure the Hazelcast client to connect to the cluster. [[Configure-Client]]
@@ -365,6 +381,8 @@ kubectl create secret generic <external-bucket-secret-name> \
 ----
 --
 
+NOTE: If you want to learn more about other authentication methods, check the xref:operator:ROOT:authorization.adoc[Authorization Methods to Access Cloud Storage] documentation.
+
 ====
 
 . Trigger Backup
@@ -374,7 +392,7 @@ Run the following command to trigger backup
 [source, shell]
 ----
 kubectl apply -f - <<EOF
-include::ROOT:example$/operator-external-backup/hot-backup-agent.yaml[]
+include::ROOT:example$/operator-external-backup/hot-backup.yaml[]
 EOF
 ----
 +
@@ -409,12 +427,35 @@ Run the following command to delete the Hazelcast cluster
 kubectl delete hazelcast my-hazelcast
 ----
 
+. Delete the PersistentVolumeClaims
++
+The data will be restored from external buckets, so you do not keep persistent volumes during restore operation.
++
+Run the following command to list PVCs which were created for Hazelcast cluster
++
+[source,bash]
+----
+$ kubectl get pvc -l "app.kubernetes.io/managed-by=hazelcast-platform-operator"
+NAME                         STATUS   VOLUME                                     CAPACITY
+persistence-my-hazelcast-0   Bound    pvc-a77fcd6e-e64d-4aeb-9708-835d66b4c5b9   8Gi
+persistence-my-hazelcast-1   Bound    pvc-8548a4a5-fa8e-45bd-9909-8e6bb6a6c3e8   8Gi
+persistence-my-hazelcast-2   Bound    pvc-c94edb25-5a72-482a-bf4e-84a99319d509   8Gi
+----
+
++
+Run the following command to delete the PVCs
++
+[source,bash]
+----
+kubectl delete pvc -l "app.kubernetes.io/managed-by=hazelcast-platform-operator"
+----
+
 . Create new Hazelcast Cluster
 +
 For restoring you will use the `HotBackup` resource you have created.
 +
 Run the following command to create the Hazelcast cluster. Before the Hazelcast cluster is started,
-the operator starts the Restore Agent(InitContainer) which restores the backup data.
+the operator starts the agent(as InitContainer) which restores the backup data from the external bucket.
 +
 [source, shell]
 ----
@@ -441,12 +482,8 @@ After verifying that the cluster is `Running` and all the members are ready, run
 [source, shell]
 ----
 $ kubectl get hazelcastendpoint my-hazelcast
-NAME               TYPE        ADDRESS
-my-hazelcast       Discovery   34.33.93.139:5701
-my-hazelcast-0     Member      34.122.120.18:30776
-my-hazelcast-1     Member      34.27.85.200:30086
-my-hazelcast-2     Member      34.173.81.209:30690
-my-hazelcast-wan   WAN         34.33.93.139:5710
+NAME           TYPE        ADDRESS
+my-hazelcast   Discovery   34.28.159.226:5701
 ----
 +
 Since we recreate the Hazelcast cluster, services are also recreated. The `ADDRESS` may change.
@@ -571,7 +608,7 @@ To clean up the created resources remove the all Custom Resources and PVCs.
 ----
 kubectl delete secret <external-bucket-secret-name>
 kubectl delete secret hazelcast-license-key
-kubectl delete $(kubectl get hazelcast,hotbackup,map -o name)
+kubectl delete $(kubectl get hazelcast,hotbackup -o name)
 kubectl delete pvc -l "app.kubernetes.io/managed-by=hazelcast-platform-operator"
 ----
 

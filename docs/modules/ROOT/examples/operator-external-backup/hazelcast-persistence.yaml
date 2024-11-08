@@ -6,13 +6,9 @@ spec:
   clusterSize: 3
   licenseKeySecretName: hazelcast-license-key
   persistence:
-    clusterDataRecoveryPolicy: "FullRecoveryOnly"
     pvc:
       accessModes: ["ReadWriteOnce"]
       requestStorage: 8Gi
-  agent:
-    repository: hazelcast/platform-operator-agent
   exposeExternally:
-    type: Smart
+    type: Unisocket
     discoveryServiceType: LoadBalancer
-    memberAccess: NodePortExternalIP

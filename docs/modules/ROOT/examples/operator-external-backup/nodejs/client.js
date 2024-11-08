@@ -6,7 +6,8 @@ const clientConfig = {
     network: {
         clusterMembers: [
             '<EXTERNAL-IP>'
-        ]
+        ],
+        smartRouting: false
     }
 };
 

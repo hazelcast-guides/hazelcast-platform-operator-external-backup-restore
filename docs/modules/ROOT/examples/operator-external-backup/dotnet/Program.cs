@@ -29,7 +29,7 @@ namespace Client
                             .AddConsole());
 
                     options.Networking.Addresses.Add("<EXTERNAL-IP>:5701");
-                    options.Networking.UsePublicAddresses = true;
+                    options.Networking.SmartRouting = false;
                     
                 })
                 .Build();
